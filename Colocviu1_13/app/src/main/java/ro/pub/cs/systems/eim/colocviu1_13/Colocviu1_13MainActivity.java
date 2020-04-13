@@ -180,7 +180,6 @@ public class Colocviu1_13MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d("[Message]", intent.getStringExtra("message"));
-            //Toast.makeText(getApplication(), intent.getStringExtra("message"), Toast.LENGTH_LONG).show();
         }
     }
 
