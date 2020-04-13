@@ -2,12 +2,18 @@ package ro.pub.cs.systems.eim.colocviu1_13;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Calendar;
 
 public class Colocviu1_13MainActivity extends AppCompatActivity {
 
@@ -21,9 +27,13 @@ public class Colocviu1_13MainActivity extends AppCompatActivity {
     private Button navigate;
     private Button initializare;
 
+    private Integer serviceStatus = 0;
+
     private CardinalsClickListener cardinalsClickListener = new CardinalsClickListener();
     private NavigateButtonClickListener navigateButtonClickListener = new NavigateButtonClickListener();
     private InitializareButtonClickListener initializareButtonClickListener = new InitializareButtonClickListener();
+
+    private IntentFilter intentFilter = new IntentFilter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +59,8 @@ public class Colocviu1_13MainActivity extends AppCompatActivity {
 
         initializare = (Button)findViewById(R.id.initializare);
         initializare.setOnClickListener(initializareButtonClickListener);
+
+        intentFilter.addAction("threadText");
     }
 
     @Override
@@ -107,6 +119,24 @@ public class Colocviu1_13MainActivity extends AppCompatActivity {
 
                 text.setText(textDeAfisat);
             }
+
+            if (numarApasari >= 4 && serviceStatus == 0) {
+                Intent intentServ = new Intent(getApplicationContext(), Colocviu1_13Service.class);
+                String currentTime = Calendar.getInstance().getTime().toString();
+                intentServ.putExtra("data_si_ora", currentTime);
+                intentServ.putExtra("text_de_afisat", textDeAfisat);
+                getApplicationContext().startService(intentServ);
+                serviceStatus = 1;
+            } else if (numarApasari >= 4 && serviceStatus == 1) {
+                Intent intentServO = new Intent(getApplicationContext(), Colocviu1_13Service.class);
+                stopService(intentServO);
+                Intent intentServ = new Intent(getApplicationContext(), Colocviu1_13Service.class);
+                String currentTime = Calendar.getInstance().getTime().toString();
+                intentServ.putExtra("data_si_ora", currentTime);
+                intentServ.putExtra("text_de_afisat", textDeAfisat);
+                getApplicationContext().startService(intentServ);
+                serviceStatus = 1;
+            }
         }
     }
 
@@ -143,5 +173,33 @@ public class Colocviu1_13MainActivity extends AppCompatActivity {
             intent.putExtra("initializare", 0);
             startActivityForResult(intent, 1);
         }
+    }
+
+    private MessageBroadcastReceiver messageBroadcastReceiver = new MessageBroadcastReceiver();
+    private class MessageBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("[Message]", intent.getStringExtra("message"));
+            //Toast.makeText(getApplication(), intent.getStringExtra("message"), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        Intent intent = new Intent(this, Colocviu1_13Service.class);
+        stopService(intent);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(messageBroadcastReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(messageBroadcastReceiver);
+        super.onPause();
     }
 }
