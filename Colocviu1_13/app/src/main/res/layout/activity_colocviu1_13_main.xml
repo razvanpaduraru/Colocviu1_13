@@ -51,4 +51,12 @@
         android:layout_below="@id/pressed"
         android:text="@string/navigate_to_secondary_acvtivity"/>
 
+    <Button
+        android:id="@+id/initializare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/navigate"
+        android:text="@string/initialize"/>
+
 </RelativeLayout>

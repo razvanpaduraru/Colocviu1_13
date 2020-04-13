@@ -5,4 +5,7 @@
     <string name="west">WEST</string>
     <string name="south">SOUTH</string>
     <string name="navigate_to_secondary_acvtivity">NAVIGATE TO SECONDARY ACVTIVITY</string>
+    <string name="register">Register</string>
+    <string name="cancel">Cancel</string>
+    <string name="initialize">INITIALIZE</string>
 </resources>
